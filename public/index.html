@@ -33,17 +33,33 @@
 					<div class="form-control">
 						<label for="room">Room</label>
 						<select name="room" id="room">
-							<option value="JavaScript">JavaScript</option>
-							<option value="Python">Python</option>
-							<option value="PHP">PHP</option>
-							<option value="C#">C#</option>
-							<option value="Ruby">Ruby</option>
-							<option value="Java">Java</option>
+							
 						</select>
 					</div>
 					<button type="submit" class="btn">Join Chat</button>
 				</form>
 			</main>
 		</div>
+		<script>
+			fetch('/api', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json',
+				},
+				body: JSON.stringify({query: "{ rooms }"})
+			})
+			.then(r => r.json())
+			.then(data => {
+				// console.log('data returned:', data.data.rooms)
+				const roomSelection = document.getElementById('room')
+				data.data.rooms.forEach(room => {
+					console.log(`room: ${room}`)
+					roomSelection.innerHTML += `
+						<option value="${room}">${room}</option>
+					`
+				});
+			});
+		</script>
 	</body>
 </html>

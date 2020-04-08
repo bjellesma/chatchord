@@ -2,6 +2,8 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
+const graphqlHTTP = require('express-graphql'); //graphql api
+const {schema,root} = require('./models/api')
 const formatMessage = require('./utils/messages');
 const {
   userJoin,
@@ -16,6 +18,13 @@ const io = socketio(server);
 
 // Set static folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+// api endpoint
+app.use('/api', graphqlHTTP({
+  schema: schema,
+  rootValue: root,
+  graphiql: true,
+}));
 
 const botName = 'ChatCord Bot';
 

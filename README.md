@@ -1,13 +1,15 @@
 # ChatCord App
-Realtime chat app with websockets using Node.js, Express and Socket.io with Vanilla JS on the frontend with a custom UI
+Real Time chat application using web sockets. Originally created by [Brad Traversy](https://www.youtube.com/channel/UC29ju8bIPH5as8OGnQzwJyA) and extended by Bill Jellesma. 
 
-## Usage
+## Development
+
+1. Install all dependencies with `npm install`
+2. Create a `.env` file in the root directory of this application with the following variables:
 ```
-npm install
-npm run dev
-
-Go to localhost:3000
+DB_HOST
+DB_PORT
+DB_NAME
+DB_USER
+DB_PASSWORD
 ```
-
-## Notes
-The *_html_css* folder is just a starter template to follow along with the tutorial at https://www.youtube.com/watch?v=jD7FnbI76Hg&t=1339s. It is not part of the app
+3. Run `npm run server` to start the server on port 3000

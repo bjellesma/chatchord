@@ -8,6 +8,11 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask-socketio = "*"
+flask-graphql = "*"
+graphene-sqlalchemy = "*"
+sqlalchemy = "*"
+pymongo = "*"
+graphene-mongo = "*"
 
 [requires]
 python_version = "3.7"

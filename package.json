@@ -4,7 +4,8 @@
   "description": "Realtime chat app with rooms",
   "main": "server.py",
   "scripts": {
-    "server": "pipenv run python server.py"
+    "server": "pipenv run python server.py",
+    "dump-requirements": "pipenv lock --requirements > requirements.txt"
   },
   "author": "Brad Traversy",
   "license": "MIT",

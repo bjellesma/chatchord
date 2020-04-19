@@ -13,6 +13,7 @@ graphql-core==2.3.1
 graphql-relay==2.0.1
 graphql-server-core==1.2.0
 greenlet==0.4.15 ; platform_python_implementation == 'CPython'
+gunicorn==20.0.4
 iso8601==0.1.12
 itsdangerous==1.1.0
 jinja2==2.11.2

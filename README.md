@@ -13,3 +13,7 @@ DB_USER
 DB_PASSWORD
 ```
 3. Run `npm run server` to start the server on port 3000
+
+## Contributing
+
+In order to add to the server, please check out 

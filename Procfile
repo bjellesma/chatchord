@@ -1,1 +1,1 @@
-web: python chatchord.py
+web: python server.py

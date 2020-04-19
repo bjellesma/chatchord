@@ -13,6 +13,7 @@ graphene-sqlalchemy = "*"
 sqlalchemy = "*"
 pymongo = "*"
 graphene-mongo = "*"
+moment = "*"
 
 [requires]
 python_version = "3.7"

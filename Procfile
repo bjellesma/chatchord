@@ -1,1 +1,1 @@
-web: python server.py
+web: pipenv run python server.py

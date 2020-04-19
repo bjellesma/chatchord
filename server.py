@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from flask_socketio import send, emit
+from flask_socketio import send, emit, join_room, leave_room
 from flask_graphql import GraphQLView
 
 from app import app, socketio
@@ -13,11 +13,45 @@ bot_name = 'Admin'
 
 @app.route('/')
 def hello_world():
-    return render_template('index.html')
+    rooms_query = '''
+        {
+            allRooms {
+                edges {
+                    node {
+                        id
+                        name
+                    }
+                }
+            }
+        }
+    '''
+    try:
+        result = schema.execute(rooms_query)
+    except Exception as err:
+        print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
+    rooms = result.data['allRooms']['edges']
+    return render_template('index.html', rooms=rooms)
 
 @app.route('/chat')
 def get_chat():
-    return render_template('chat.html')
+    chats_query='''
+        {
+            allBots {
+                edges {
+                    node {
+                        id
+                        name
+                    }
+                }
+            }
+        }
+    '''
+    try:
+        result = schema.execute(chats_query)
+    except Exception as err:
+        print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
+    bots = result.data['allBots']['edges']
+    return render_template('chat.html', bots=bots)
 
 app.add_url_rule(
     '/graphql',
@@ -35,7 +69,13 @@ def init_connection():
 @socketio.on('chatMessage')
 def chat_message(message):
     user = get_current_user(request.sid)
-    emit('message', format_message(user["username"], message), broadcast=True)
+    room = user["room"]
+    emit(
+        'message', 
+        format_message(user["username"], message), 
+        broadcast=True,
+        room=room
+    )
 
 @socketio.on('joinRoom')
 def joinRoom(data):
@@ -44,28 +84,50 @@ def joinRoom(data):
         uid=request.sid,
         username=data['username'],
         room=data['room']
-    )
+    )  
+
+    #since we'll use the room option often, we'll extract the room name
+    #maybe change to ids in the future
+    room = user["room"]
+
+    join_room(user["room"])
 
     # welcome current user
-    emit('message', format_message(bot_name, f'Welcome to {user["room"]}'), broadcast=False)
+    emit(
+        'message', 
+        format_message(bot_name, f'Welcome to {room}'), 
+        broadcast=False
+    )
 
     # broadcast user
-    emit('message', format_message(bot_name, f'{user["username"]} has joined {user["room"]}'), broadcast=True)
+    emit(
+        'message', 
+        format_message(bot_name, f'{user["username"]} has joined {user["room"]}'), 
+        broadcast=True,
+        room=room
+    )
     # send room info
-    emit('roomUsers', {
-        'room': user["room"],
-        'users': get_room_users(user["room"])
-    }, broadcast=True)
+    emit(
+        'roomUsers', 
+        {'room': room, 'users': get_room_users(room)}, 
+        broadcast=True,
+        room=room)
 
 @socketio.on('disconnect')
 def disconnect():
     user = user_disconnect(uid=request.sid)
     if user:
-        emit('message', format_message(bot_name, f'{user["username"]} has left the chat'), broadcast=True)
-        emit('roomUsers', {
-            'room': user["room"],
-            'users': get_room_users(user["room"])
-        }, broadcast=True)
+        emit(
+            'message', 
+            format_message(bot_name, f'{user["username"]} has left the chat'), 
+            broadcast=True,
+            room=room
+        )
+        emit(
+            'roomUsers', 
+            {'room': user["room"],'users': get_room_users(user["room"])}, 
+            broadcast=True,
+            room=room)
 
 if __name__ == "__main__":
     app.run(

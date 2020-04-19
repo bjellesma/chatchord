@@ -14,6 +14,7 @@
 		<title>ChatCord App</title>
 	</head>
 	<body>
+		
 		<div class="join-container">
 			<header class="join-header">
 				<h1><i class="fas fa-smile"></i> ChatCord</h1>
@@ -33,38 +34,14 @@
 					<div class="form-control">
 						<label for="room">Room</label>
 						<select name="room" id="room">
-							<option value="JavaScript">JavaScript</option>
-							<option value="Python">Python</option>
-							<option value="PHP">PHP</option>
-							<option value="C#">C#</option>
-							<option value="Ruby">Ruby</option>
-							<option value="Java">Java</option>
+							{% for room in rooms %}
+							<option value="{{room['node']['name']}}">{{room['node']['name']}}</option>
+							{% endfor %}
 						</select>
 					</div>
 					<button type="submit" class="btn">Join Chat</button>
 				</form>
 			</main>
 		</div>
-		<script>
-			fetch('/api', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-				},
-				body: JSON.stringify({query: "{ rooms }"})
-			})
-			.then(r => r.json())
-			.then(data => {
-				// console.log('data returned:', data.data.rooms)
-				const roomSelection = document.getElementById('room')
-				data.data.rooms.forEach(room => {
-					console.log(`room: ${room}`)
-					roomSelection.innerHTML += `
-						<option value="${room}">${room}</option>
-					`
-				});
-			});
-		</script>
 	</body>
 </html>

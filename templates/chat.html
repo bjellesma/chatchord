@@ -25,7 +25,11 @@
           <h3><i class="fas fa-users"></i> Users</h3>
           <ul id="users"></ul>
           <h3><i class="fas fa-users"></i> Bots</h3>
-          <ul id="bots"></ul>
+          <ul id="bots">
+            {% for bot in bots %}
+            <li>{{bot['node']['name']}}</li>
+            {% endfor %}
+          </ul>
         </div>
         <div class="chat-messages"></div>
       </main>
@@ -42,26 +46,6 @@
         </form>
       </div>
     </div>
-    <script>
-      fetch('/api', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-				},
-				body: JSON.stringify({query: "{ bots }"})
-			})
-			.then(r => r.json())
-			.then(data => {
-				const bots = document.getElementById('bots')
-				data.data.bots.forEach(bot => {
-					console.log(`bots: ${bots}`)
-					bots.innerHTML += `
-						<li>${bot}</li>
-					`
-				});
-			});
-    </script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.2/qs.min.js"
       integrity="sha256-TDxXjkAUay70ae/QJBEpGKkpVslXaHHayklIVglFRT4="

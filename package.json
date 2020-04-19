@@ -2,9 +2,8 @@
   "name": "chatcord",
   "version": "1.0.0",
   "description": "Realtime chat app with rooms",
-  "main": "server.js",
+  "main": "server.py",
   "scripts": {
-    "start": "node server",
     "server": "pipenv run python server.py"
   },
   "author": "Brad Traversy",

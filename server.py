@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask_socketio import send, emit, join_room, leave_room
 from flask_graphql import GraphQLView
+import json
 
 from app import app, socketio
 
@@ -32,6 +33,24 @@ def hello_world():
     rooms = result.data['allRooms']['edges']
     return render_template('index.html', rooms=rooms)
 
+@app.route('/api/postbotmessage', methods=['POST'])
+def post_bot_message():
+    data = request.get_json()
+    # data = json.loads(data)
+    bot_name = data['botName']
+    bot_phrases = [
+        'I want chicken',
+        'I want liver',
+        'Meow Mix meow mix',
+        'Please deliver'
+    ]
+    socketio.emit(
+        'message', 
+        format_message(bot_name, bot_phrases[0]), 
+        broadcast=True
+    )
+    return 'Success'
+
 @app.route('/chat')
 def get_chat():
     chats_query='''
@@ -46,6 +65,7 @@ def get_chat():
             }
         }
     '''
+    
     try:
         result = schema.execute(chats_query)
     except Exception as err:
@@ -130,4 +150,4 @@ def disconnect():
             room=room)
 
 if __name__ == '__main__':
-    socketio.run(app, port=3001, debug=False)
+    socketio.run(app, port=3001, debug=True)

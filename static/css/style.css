@@ -125,6 +125,10 @@ a {
 	height: 40px;
 	flex: 1;
 }
+/* Bots */
+.botTalk {
+	cursor:pointer;
+}
 
 /* Join Page */
 .join-container {

@@ -41,6 +41,23 @@ chatForm.addEventListener('submit', e => {
   e.target.elements.msg.focus();
 });
 
+// When the user clicks on a bot
+const bots = document.querySelectorAll('.botTalk')
+bots.forEach((bot) => {
+  bot.addEventListener('click', function(){
+    const botData = {
+      botName: this.innerHTML
+    }
+    fetch('/api/postbotmessage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(botData)
+    })
+  })
+})
+
 // Output message to DOM
 function outputMessage(message) {
   const div = document.createElement('div');

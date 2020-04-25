@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from flask_socketio import send, emit, join_room, leave_room
 from flask_graphql import GraphQLView
 import json
+import random
 
 from app import app, socketio
 
@@ -44,9 +45,10 @@ def post_bot_message():
         'Meow Mix meow mix',
         'Please deliver'
     ]
+    bot_phrase = random.choice(bot_phrases)
     socketio.emit(
         'message', 
-        format_message(bot_name, bot_phrases[0]), 
+        format_message(bot_name, bot_phrase), 
         broadcast=True
     )
     return 'Success'

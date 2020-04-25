@@ -2,7 +2,7 @@
 import models.mongobase
 from mongoengine import Document
 from mongoengine.fields import (
-    DateTimeField, ReferenceField, StringField,
+    StringField, ListField
 )
 import pprint
 
@@ -15,3 +15,4 @@ class BotsModel(Document):
 
     meta = {'collection': "bots"}
     name = StringField()
+    phrases = ListField(StringField())

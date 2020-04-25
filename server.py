@@ -10,6 +10,7 @@ from app import app, socketio
 from utils.users import user_connect, user_disconnect, get_room_users, get_current_user
 from utils.messages import format_message
 from models.schema import schema
+from models.datastore import bots, get_bot_phrases_by_name
 
 bot_name = 'Admin'
 
@@ -39,12 +40,7 @@ def post_bot_message():
     data = request.get_json()
     # data = json.loads(data)
     bot_name = data['botName']
-    bot_phrases = [
-        'I want chicken',
-        'I want liver',
-        'Meow Mix meow mix',
-        'Please deliver'
-    ]
+    bot_phrases = get_bot_phrases_by_name(bot_name)
     bot_phrase = random.choice(bot_phrases)
     socketio.emit(
         'message', 
@@ -62,6 +58,7 @@ def get_chat():
                     node {
                         id
                         name
+                        phrases
                     }
                 }
             }
@@ -72,7 +69,16 @@ def get_chat():
         result = schema.execute(chats_query)
     except Exception as err:
         print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
-    bots = result.data['allBots']['edges']
+    bots_graphql = result.data['allBots']['edges']
+    # Load bots into datastore
+    print(f'bot graphql: {bots_graphql}')
+    for bot in bots_graphql:
+        bots.append(
+            {
+                'name': bot['node']['name'],
+                'phrases': bot['node']['phrases']
+            }
+        )
     return render_template('chat.html', bots=bots)
 
 app.add_url_rule(

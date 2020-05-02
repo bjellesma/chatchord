@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, jsonify
 from flask_socketio import send, emit, join_room, leave_room
 from flask_graphql import GraphQLView
 import json
@@ -14,26 +14,36 @@ from models.datastore import bots, get_bot_phrases_by_name
 
 bot_name = 'Admin'
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello_world():
-    rooms_query = '''
-        {
-            allRooms {
-                edges {
-                    node {
-                        id
-                        name
+    if request.method == 'GET':
+        rooms_query = '''
+            {
+                allRooms {
+                    edges {
+                        node {
+                            id
+                            name
+                            requiresAuth
+                        }
                     }
                 }
             }
-        }
-    '''
-    try:
-        result = schema.execute(rooms_query)
-    except Exception as err:
-        print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
-    rooms = result.data['allRooms']['edges']
-    return render_template('index.html', rooms=rooms)
+        '''
+        try:
+            result = schema.execute(rooms_query)
+        except Exception as err:
+            print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
+        rooms = result.data['allRooms']['edges']
+        return render_template('index.html', rooms=rooms)
+    elif request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        room = data['room']
+        return jsonify({
+            'username': username,
+            'room':room
+        })
 
 @app.route('/api/postbotmessage', methods=['POST'])
 def post_bot_message():
@@ -49,37 +59,38 @@ def post_bot_message():
     )
     return 'Success'
 
-@app.route('/chat')
+@app.route('/chat', methods=['GET', 'POST'])
 def get_chat():
-    chats_query='''
-        {
-            allBots {
-                edges {
-                    node {
-                        id
-                        name
-                        phrases
+    if request.method == 'GET':
+        chats_query='''
+            {
+                allBots {
+                    edges {
+                        node {
+                            id
+                            name
+                            phrases
+                        }
                     }
                 }
             }
-        }
-    '''
-    
-    try:
-        result = schema.execute(chats_query)
-    except Exception as err:
-        print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
-    bots_graphql = result.data['allBots']['edges']
-    # Load bots into datastore
-    print(f'bot graphql: {bots_graphql}')
-    for bot in bots_graphql:
-        bots.append(
-            {
-                'name': bot['node']['name'],
-                'phrases': bot['node']['phrases']
-            }
-        )
-    return render_template('chat.html', bots=bots)
+        '''
+        
+        try:
+            result = schema.execute(chats_query)
+        except Exception as err:
+            print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
+        bots_graphql = result.data['allBots']['edges']
+        # Load bots into datastore
+        for bot in bots_graphql:
+            bots.append(
+                {
+                    'name': bot['node']['name'],
+                    'phrases': bot['node']['phrases']
+                }
+            )
+        return render_template('chat.html', bots=bots)
+        
 
 app.add_url_rule(
     '/graphql',

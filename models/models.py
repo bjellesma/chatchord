@@ -2,7 +2,7 @@
 import models.mongobase
 from mongoengine import Document
 from mongoengine.fields import (
-    StringField, ListField
+    StringField, ListField, BooleanField
 )
 import pprint
 
@@ -10,6 +10,7 @@ class RoomsModel(Document):
 
     meta = {'collection': "rooms"}
     name = StringField()
+    requiresAuth = BooleanField()
 
 class BotsModel(Document):
 

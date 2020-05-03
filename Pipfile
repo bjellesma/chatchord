@@ -14,6 +14,7 @@ graphene-mongo = "*"
 moment = "*"
 gevent = "*"
 gunicorn = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"

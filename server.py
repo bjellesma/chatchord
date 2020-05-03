@@ -11,6 +11,7 @@ from utils.users import user_connect, user_disconnect, get_room_users, get_curre
 from utils.messages import format_message
 from models.schema import schema
 from models.datastore import bots, get_bot_phrases_by_name
+from secure import UserTokens
 
 bot_name = 'Admin'
 
@@ -40,9 +41,10 @@ def hello_world():
         data = request.get_json()
         username = data['username']
         room = data['room']
+        json_web_token = UserTokens.create_token(username=username,room=room)
+        print(f'jwt: {json_web_token}')
         return jsonify({
-            'username': username,
-            'room':room
+            'token': json_web_token
         })
 
 @app.route('/api/postbotmessage', methods=['POST'])
@@ -75,7 +77,14 @@ def get_chat():
                 }
             }
         '''
-        
+        jwt = request.args.get('token')
+        jwt_payload = UserTokens.read_token(jwt)
+        username = jwt_payload.get('username')
+        room = jwt_payload.get('room')
+        joinRoom({
+            'username': username,
+            'room': room
+        })
         try:
             result = schema.execute(chats_query)
         except Exception as err:
@@ -89,7 +98,7 @@ def get_chat():
                     'phrases': bot['node']['phrases']
                 }
             )
-        return render_template('chat.html', bots=bots)
+        return render_template('chat.html', bots=bots, username=username, room=room)
         
 
 app.add_url_rule(

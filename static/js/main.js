@@ -69,7 +69,7 @@ document.getElementById('submit').addEventListener('click', function (event) {
                     return [4 /*yield*/, response.json()];
                 case 2:
                     result = _a.sent();
-                    window.location.href = '/chat';
+                    window.location.href = "/chat?token=" + result.token.toString();
                     return [2 /*return*/];
             }
         });

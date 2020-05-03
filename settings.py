@@ -7,6 +7,7 @@ DBPASSWORD = os.environ["DB_PASSWORD"]
 DBHOST = os.environ["DB_HOST"]
 DBPORT = os.environ["DB_PORT"]
 DBNAME = os.environ["DB_NAME"]
+JWT_SECRET = os.environ["JWT_SECRET"]
 
 class ColorMessages:
     HEADER = '\033[95m'

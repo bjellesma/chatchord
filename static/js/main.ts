@@ -31,7 +31,7 @@ document.getElementById('submit').addEventListener('click', async function(event
     },
   })
   const result = await response.json()
-  window.location.href = '/chat'
+  window.location.href = `/chat?token=${result.token.toString()}`
 })
 
 // Get room and users

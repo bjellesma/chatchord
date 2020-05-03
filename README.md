@@ -11,6 +11,7 @@ DB_PORT
 DB_NAME
 DB_USER
 DB_PASSWORD
+JWT_SECRET
 ```
 3. Run `npm run server` to start the server on port 3000
 

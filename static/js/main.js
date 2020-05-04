@@ -39,12 +39,56 @@ var chatMessages = document.querySelector('.chat-messages');
 var roomName = document.getElementById('room-name');
 var userList = document.getElementById('users');
 // Get username and room from URL
-//@ts-ignore
-var _a = Qs.parse(location.search, {
-    ignoreQueryPrefix: true
-}), username = _a.username, room = _a.room;
-//@ts-ignore
-var socket = io.connect();
+if (document.getElementById('chatRoom')) {
+    //@ts-ignore
+    var userToken = Qs.parse(location.search, {
+        ignoreQueryPrefix: true
+    });
+    //@ts-ignore
+    var socket_1 = io.connect();
+    // Join chatroom
+    socket_1.emit('joinRoom', { userToken: userToken });
+    // Get room and users
+    socket_1.on('roomUsers', function (_a) {
+        var room = _a.room, users = _a.users;
+        outputRoomName(room);
+        outputUsers(users);
+    });
+    // Message from server
+    socket_1.on('message', function (message) {
+        outputMessage(message);
+        // Scroll down
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+    // Message submit
+    chatForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        // Get message text
+        var messageTextArea = document.getElementById('msg');
+        var msg = messageTextArea.value;
+        // Emit message to server
+        socket_1.emit('chatMessage', msg);
+        // Clear input
+        messageTextArea.value = '';
+        messageTextArea.focus();
+    });
+    // When the user clicks on a bot
+    var bots = document.querySelectorAll('.botTalk');
+    bots.forEach(function (bot) {
+        bot.addEventListener('click', function () {
+            var botData = {
+                botName: this.innerHTML
+            };
+            fetch('/api/postbotmessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(botData)
+            });
+        });
+    });
+}
 //submit button on main page
 document.getElementById('submit').addEventListener('click', function (event) {
     return __awaiter(this, void 0, void 0, function () {
@@ -72,46 +116,6 @@ document.getElementById('submit').addEventListener('click', function (event) {
                     window.location.href = "/chat?token=" + result.token.toString();
                     return [2 /*return*/];
             }
-        });
-    });
-});
-// Get room and users
-socket.on('roomUsers', function (_a) {
-    var room = _a.room, users = _a.users;
-    outputRoomName(room);
-    outputUsers(users);
-});
-// Message from server
-socket.on('message', function (message) {
-    outputMessage(message);
-    // Scroll down
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-});
-// Message submit
-chatForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    // Get message text
-    var messageTextArea = document.getElementById('msg');
-    var msg = messageTextArea.value;
-    // Emit message to server
-    socket.emit('chatMessage', msg);
-    // Clear input
-    messageTextArea.value = '';
-    messageTextArea.focus();
-});
-// When the user clicks on a bot
-var bots = document.querySelectorAll('.botTalk');
-bots.forEach(function (bot) {
-    bot.addEventListener('click', function () {
-        var botData = {
-            botName: this.innerHTML
-        };
-        fetch('/api/postbotmessage', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(botData)
         });
     });
 });

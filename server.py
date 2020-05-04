@@ -81,10 +81,6 @@ def get_chat():
         jwt_payload = UserTokens.read_token(jwt)
         username = jwt_payload.get('username')
         room = jwt_payload.get('room')
-        joinRoom({
-            'username': username,
-            'room': room
-        })
         try:
             result = schema.execute(chats_query)
         except Exception as err:
@@ -127,18 +123,22 @@ def chat_message(message):
 
 @socketio.on('joinRoom')
 def joinRoom(data):
+    user_token = data['userToken']['token']
+    print(f'user_token: {user_token}')
+    # decode token
+    jwt_payload = UserTokens.read_token(user_token.encode())
     # create user object
     user = user_connect(
         uid=request.sid,
-        username=data['username'],
-        room=data['room']
+        username=jwt_payload.get('username'),
+        room=jwt_payload.get('room')
     )  
 
     #since we'll use the room option often, we'll extract the room name
     #maybe change to ids in the future
-    room = user["room"]
+    room = jwt_payload.get('room')
 
-    join_room(user["room"])
+    join_room(room)
 
     # welcome current user
     emit(

@@ -8,13 +8,69 @@ interface HTMLInputEvent extends Event {
 }
 
 // Get username and room from URL
-//@ts-ignore
-const { username, room } = Qs.parse(location.search, {
-  ignoreQueryPrefix: true
-});
 
-//@ts-ignore
-var socket = io.connect();
+
+
+if(document.getElementById('chatRoom')){
+  //@ts-ignore
+  const userToken = Qs.parse(location.search, {
+    ignoreQueryPrefix: true
+  });
+  //@ts-ignore
+  const socket = io.connect();
+
+  // Join chatroom
+  socket.emit('joinRoom', { userToken });
+
+
+  // Get room and users
+  socket.on('roomUsers', ({ room, users }) => {
+    outputRoomName(room);
+    outputUsers(users);
+  });
+
+  // Message from server
+  socket.on('message', message => {
+    outputMessage(message);
+    // Scroll down
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  });
+
+  // Message submit
+  chatForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    // Get message text
+    const messageTextArea = (<HTMLTextAreaElement>document.getElementById('msg'))
+    const msg = messageTextArea.value;
+
+    // Emit message to server
+    socket.emit('chatMessage', msg);
+
+    // Clear input
+    messageTextArea.value = '';
+    messageTextArea.focus();
+  });
+
+
+
+  // When the user clicks on a bot
+  const bots = document.querySelectorAll('.botTalk')
+  bots.forEach((bot) => {
+    bot.addEventListener('click', function(){
+      const botData = {
+        botName: this.innerHTML
+      }
+      fetch('/api/postbotmessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(botData)
+      })
+    })
+  })
+}
 
   //submit button on main page
 document.getElementById('submit').addEventListener('click', async function(event){
@@ -34,53 +90,6 @@ document.getElementById('submit').addEventListener('click', async function(event
   window.location.href = `/chat?token=${result.token.toString()}`
 })
 
-// Get room and users
-socket.on('roomUsers', ({ room, users }) => {
-  outputRoomName(room);
-  outputUsers(users);
-});
-
-// Message from server
-socket.on('message', message => {
-  outputMessage(message);
-  // Scroll down
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-});
-
-// Message submit
-chatForm.addEventListener('submit', e => {
-  e.preventDefault();
-
-  // Get message text
-  const messageTextArea = (<HTMLTextAreaElement>document.getElementById('msg'))
-  const msg = messageTextArea.value;
-
-  // Emit message to server
-  socket.emit('chatMessage', msg);
-
-  // Clear input
-  messageTextArea.value = '';
-  messageTextArea.focus();
-});
-
-
-
-// When the user clicks on a bot
-const bots = document.querySelectorAll('.botTalk')
-bots.forEach((bot) => {
-  bot.addEventListener('click', function(){
-    const botData = {
-      botName: this.innerHTML
-    }
-    fetch('/api/postbotmessage', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(botData)
-    })
-  })
-})
 
 // Output message to DOM
 function outputMessage(message) {

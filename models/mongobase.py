@@ -10,13 +10,14 @@ database_name = settings.DBNAME
 connect_string = f'{database_type}://{database_user}:{database_password}@{database_host}:{database_port}/{database_name}'
 
 # You can connect to a real mongo server instance by your own.
-connect('mongo_instance', host=connect_string, alias='default')
+connect('mongo_instance', host=connect_string, alias='default', retryWrites=False)
 # import pymongo
 # import settings 
 # from settings import ColorMessages
 
 # # NOTE testing
 # import pprint
+
 
 
 

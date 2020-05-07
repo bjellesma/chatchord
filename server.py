@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, request, redirect, jsonify, url_for
 from flask_socketio import send, emit, join_room, leave_room
 from flask_graphql import GraphQLView
+from flask_login import current_user, login_user, logout_user #used for login
+from models.models import UsersModel #used for login
 import json
 import random
 
@@ -16,8 +18,8 @@ from secure import UserTokens
 bot_name = 'Admin'
 
 @app.route('/', methods=['GET', 'POST'])
-def hello_world():
-    if request.method == 'GET':
+def index():
+    if request.method == 'GET':      
         rooms_query = '''
             {
                 allRooms {
@@ -41,8 +43,8 @@ def hello_world():
         data = request.get_json()
         username = data['username']
         room = data['room']
+        # create jwt
         json_web_token = UserTokens.create_token(username=username,room=room)
-        print(f'jwt: {json_web_token}')
         return jsonify({
             'token': json_web_token
         })
@@ -95,7 +97,30 @@ def get_chat():
                 }
             )
         return render_template('chat.html', bots=bots, username=username, room=room)
-        
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    elif request.method == 'POST':
+        # if the user is already authenticated
+        if current_user.is_authenticated:
+            return redirect(url_for('get_chat'))
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = UsersModel().find_user_by_username(username)
+        # the existence of a user is checked first and then a password will be checked only if the user exists
+        if user and user.check_password(password):
+            login_user(user)
+            return redirect(url_for('get_chat'))
+        else:
+            flash('Invalid username and/or password')
+            return redirect(url_for('login'))
+    
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 app.add_url_rule(
     '/graphql',
@@ -124,7 +149,6 @@ def chat_message(message):
 @socketio.on('joinRoom')
 def joinRoom(data):
     user_token = data['userToken']['token']
-    print(f'user_token: {user_token}')
     # decode token
     jwt_payload = UserTokens.read_token(user_token.encode())
     # create user object

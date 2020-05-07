@@ -15,6 +15,7 @@ moment = "*"
 gevent = "*"
 gunicorn = "*"
 pyjwt = "*"
+flask-login = "*"
 
 [requires]
 python_version = "3.7"

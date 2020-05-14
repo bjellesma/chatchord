@@ -74,20 +74,34 @@ if(document.getElementById('chatRoom')){
 
   //submit button on main page
 document.getElementById('submit').addEventListener('click', async function(event){
+  const username = <HTMLInputElement>document.getElementById('username')
+  const room = <HTMLSelectElement>document.getElementById('room')
   const data = {
-    username: (<HTMLInputElement>document.getElementById('username')).value,
-    room: (<HTMLSelectElement>document.getElementById('room')).value
+    username: (username).value,
+    room: (room).value
   }
-  const response = await fetch('/', {
-    method: 'post',
-    body: JSON.stringify(data),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-  })
-  const result = await response.json()
-  window.location.href = `/chat?token=${result.token.toString()}`
+  const auth_rooms = [
+    'Office',
+    'Conference Room'
+  ]
+  // TODO make an attribute on room object in database for if it requires auth
+  // if the room that the user is entering requires login
+  if(auth_rooms.includes(room.value)){
+    // redirect to login page
+    window.location.href = `/login?room=${room.value}&username=${username.value}`
+  }else{
+    //if login is not required, we can simply request to get a token from the main page
+    const response = await fetch('/', {
+      method: 'post',
+      body: JSON.stringify(data),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+    })
+    const result = await response.json()
+    window.location.href = `/chat?token=${result.token.toString()}`
+  }
 })
 
 

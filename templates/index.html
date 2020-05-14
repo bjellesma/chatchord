@@ -7,19 +7,20 @@
 			</header>
 			<main class="join-main">
 				<form class="form">
-					<div class="form-control">
+					<div class="form-group">
 						<label for="username">Username</label>
 						<input
 							type="text"
 							name="username"
 							id="username"
+							class="form-control"
 							placeholder="Enter username..."
 							required
 						/>
 					</div>
-					<div class="form-control">
+					<div class="form-group">
 						<label for="room">Room</label>
-						<select name="room" id="room">
+						<select  class="form-control" name="room" id="room">
 							{% for room in rooms %}
 							<option value="{{room['node']['name']}}">{{room['node']['name']}}</option>
 							{% endfor %}

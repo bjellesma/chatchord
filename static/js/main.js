@@ -92,29 +92,40 @@ if (document.getElementById('chatRoom')) {
 //submit button on main page
 document.getElementById('submit').addEventListener('click', function (event) {
     return __awaiter(this, void 0, void 0, function () {
-        var data, response, result;
+        var username, room, data, auth_rooms, response, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    username = document.getElementById('username');
+                    room = document.getElementById('room');
                     data = {
-                        username: document.getElementById('username').value,
-                        room: document.getElementById('room').value
+                        username: (username).value,
+                        room: (room).value
                     };
-                    return [4 /*yield*/, fetch('/', {
-                            method: 'post',
-                            body: JSON.stringify(data),
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        })];
-                case 1:
+                    auth_rooms = [
+                        'Office',
+                        'Conference Room'
+                    ];
+                    if (!auth_rooms.includes(room.value)) return [3 /*break*/, 1];
+                    // redirect to login page
+                    window.location.href = "/login?room=" + room.value + "&username=" + username.value;
+                    return [3 /*break*/, 4];
+                case 1: return [4 /*yield*/, fetch('/', {
+                        method: 'post',
+                        body: JSON.stringify(data),
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })];
+                case 2:
                     response = _a.sent();
                     return [4 /*yield*/, response.json()];
-                case 2:
+                case 3:
                     result = _a.sent();
                     window.location.href = "/chat?token=" + result.token.toString();
-                    return [2 /*return*/];
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     });

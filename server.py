@@ -43,10 +43,10 @@ def index():
         data = request.get_json()
         username = data['username']
         room = data['room']
-        # create jwt
-        json_web_token = UserTokens.create_token(username=username,room=room)
+        # create jwt for an anonymous user
+        json_web_token = UserTokens.create_token(username=username,room=room,anonyous=True)
         return jsonify({
-            'token': json_web_token
+            'token': json_web_token,
         })
 
 @app.route('/api/postbotmessage', methods=['POST'])
@@ -101,18 +101,23 @@ def get_chat():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('login.html')
+        room = request.args.get('room')
+        username = request.args.get('username')
+        return render_template('login.html', room=room)
     elif request.method == 'POST':
         # if the user is already authenticated
         if current_user.is_authenticated:
             return redirect(url_for('get_chat'))
         username = request.form.get('username')
         password = request.form.get('password')
+        room = request.form.get('roomName')
         user = UsersModel().find_user_by_username(username)
         # the existence of a user is checked first and then a password will be checked only if the user exists
         if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('get_chat'))
+            # create jwt for an authenticated user
+            json_web_token = UserTokens.create_token(username=username,room=room,anonymous=False)
+            return redirect(url_for('get_chat', token=json_web_token))
         else:
             flash('Invalid username and/or password')
             return redirect(url_for('login'))
@@ -121,6 +126,23 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET'
+        return render_template('register.html')
+    elif request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        confirmPassword = request.form.get('confirmPassword')
+        if username and len(username) == 4 and password == confirmPassword:
+            user = UsersModel()
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
 
 app.add_url_rule(
     '/graphql',

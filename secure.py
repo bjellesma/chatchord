@@ -4,9 +4,14 @@ from settings import JWT_SECRET
 class UserTokens:
 
     @classmethod
-    def create_token(self, username, room):
+    def create_token(self, username, room, anonymous=True):
         """
-        create json web token with username and room for anonymous rooms
+        create json web token with username and room for rooms
+
+        Params:
+            username {string} - chosen name of user
+            room {string} - chosen room of user
+            anonymous - True if the user is not authenticated. False if they have authenticated. Default: True
 
         Returns
             token {string} - string representing payload on server side
@@ -14,7 +19,8 @@ class UserTokens:
         encoded_jwt = jwt.encode(
             {
                 'username': username,
-                'room': room
+                'room': room,
+                'anonymous': anonymous
             }, 
             JWT_SECRET,
             algorithm='HS256'

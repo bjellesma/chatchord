@@ -1,9 +1,7 @@
 {% extends "partials/base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Register User{% endblock %}
 {% block body %}
     <form class="form" method="post">
-        <input type="hidden" name="roomName" value="{{room}}">
-        <p>It looks like you're attempting to login to <span class="roomName">{{room}}</span></p>
         <div class="form-group">
             <label>Username</label>
             <input class="form-control" type="text" name="username" id="username">
@@ -12,6 +10,10 @@
             <label>Password</label>
             <input class="form-control" type="password" name="password" id="password">
         </div>
-        <button type="submit" class="btn btn-success">Login</button>
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input class="form-control" type="password" name="confirmPassword" id="confirmPassword">
+        </div>
+        <button type="submit" class="btn btn-success">Register User</button>
     </form>
 {%endblock%}

@@ -16,7 +16,7 @@ from models.datastore import bots, get_bot_phrases_by_name
 from secure import UserTokens
 
 bot_name = 'Admin'
-
+print(f'starting app',flush=True)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':      
@@ -168,7 +168,7 @@ def init_connection():
 
 @socketio.on('chatMessage')
 def chat_message(message):
-    print(f'print message')
+    print(f'print message', flush=True)
     user = get_current_user(request.sid)
     room = user["room"]
     emit(

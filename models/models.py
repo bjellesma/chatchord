@@ -29,7 +29,7 @@ class UsersModel(UserMixin, Document):
             print('No user exists with that name')
             return None
 
-    def register(self, username, password, confirmPassword):
+    # def register(self, username, password, confirmPassword):
         # Execute the graphql mutation to register the user
         # mutation {
         #     createUser(username: "some_dude", password: "123"){

@@ -129,7 +129,7 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'GET'
+    if request.method == 'GET':
         return render_template('register.html')
     elif request.method == 'POST':
         username = request.form.get('username')

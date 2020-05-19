@@ -5,7 +5,8 @@
   "main": "server.py",
   "scripts": {
     "server": "pipenv run python server.py",
-    "dump-requirements": "pipenv lock --requirements > requirements.txt"
+    "dump-requirements": "pipenv lock --requirements > requirements.txt",
+    "tc-watch": "tsc static/js/main.ts -w"
   },
   "author": "Brad Traversy",
   "license": "MIT",

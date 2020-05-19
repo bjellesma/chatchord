@@ -17,7 +17,7 @@ if(document.getElementById('chatRoom')){
     ignoreQueryPrefix: true
   });
   //@ts-ignore
-  const socket = io.connect('wss/chatchord.herokuapp.com', {transports: ['websocket']});
+  const socket = io.connect('wss:?/chatchord.herokuapp.com', {transports: ['websocket']});
 
   // Join chatroom
   socket.on('connect', function(){

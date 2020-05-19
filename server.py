@@ -164,7 +164,7 @@ app.add_url_rule(
 
 @socketio.on('connect')
 def init_connection():
-    print('A connection has been initiated')
+    print('A connection has been initiated',flush=True)
 
 @socketio.on('chatMessage')
 def chat_message(message):

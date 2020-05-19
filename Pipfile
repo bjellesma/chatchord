@@ -16,6 +16,7 @@ gevent = "*"
 gunicorn = "*"
 pyjwt = "*"
 flask-login = "*"
+gevent-websocket = "*"
 
 [requires]
 python_version = "3.7"

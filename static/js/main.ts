@@ -17,10 +17,14 @@ if(document.getElementById('chatRoom')){
     ignoreQueryPrefix: true
   });
   //@ts-ignore
-  const socket = io.connect();
+  const socket = io.connect('127.0.0.1:3001');
 
   // Join chatroom
-  socket.emit('joinRoom', { userToken });
+  socket.on('connect', function(){
+    console.log('connect once')
+    socket.emit('joinRoom', { userToken });
+  })
+  
 
 
   // Get room and users
@@ -123,6 +127,10 @@ function outputRoomName(room) {
 
 // Add users to DOM
 function outputUsers(users) {
+  users.forEach(user => {
+    console.log(`user: ${user.uid}`)
+  });
+  console.log(`users: ${users}`)
   userList.innerHTML = `
     ${users.map(user => `<li>${user.username}</li>`).join('')}
   `;

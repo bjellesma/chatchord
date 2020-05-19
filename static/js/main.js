@@ -41,13 +41,16 @@ var userList = document.getElementById('users');
 // Get username and room from URL
 if (document.getElementById('chatRoom')) {
     //@ts-ignore
-    var userToken = Qs.parse(location.search, {
+    var userToken_1 = Qs.parse(location.search, {
         ignoreQueryPrefix: true
     });
     //@ts-ignore
-    var socket_1 = io.connect();
+    var socket_1 = io.connect('127.0.0.1:3001');
     // Join chatroom
-    socket_1.emit('joinRoom', { userToken: userToken });
+    socket_1.on('connect', function () {
+        console.log('connect once');
+        socket_1.emit('joinRoom', { userToken: userToken_1 });
+    });
     // Get room and users
     socket_1.on('roomUsers', function (_a) {
         var room = _a.room, users = _a.users;
@@ -143,5 +146,9 @@ function outputRoomName(room) {
 }
 // Add users to DOM
 function outputUsers(users) {
+    users.forEach(function (user) {
+        console.log("user: " + user.uid);
+    });
+    console.log("users: " + users);
     userList.innerHTML = "\n    " + users.map(function (user) { return "<li>" + user.username + "</li>"; }).join('') + "\n  ";
 }

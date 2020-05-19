@@ -44,7 +44,7 @@ def index():
         username = data['username']
         room = data['room']
         # create jwt for an anonymous user
-        json_web_token = UserTokens.create_token(username=username,room=room,anonyous=True)
+        json_web_token = UserTokens.create_token(username=username,room=room,anonymous=True)
         return jsonify({
             'token': json_web_token,
         })

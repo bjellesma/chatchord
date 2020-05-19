@@ -17,7 +17,7 @@ if(document.getElementById('chatRoom')){
     ignoreQueryPrefix: true
   });
   //@ts-ignore
-  const socket = io()
+  const socket = io({transports: ['websocket']})
 
   // Join chatroom
   socket.on('connect', function(){

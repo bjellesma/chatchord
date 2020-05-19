@@ -21,7 +21,6 @@ if(document.getElementById('chatRoom')){
 
   // Join chatroom
   socket.on('connect', function(){
-    console.log('connect once')
     socket.emit('joinRoom', { userToken });
   })
   
@@ -56,21 +55,33 @@ if(document.getElementById('chatRoom')){
     messageTextArea.focus();
   });
 
-
-
-  // When the user clicks on a bot
-  const bots = document.querySelectorAll('.botTalk')
-  bots.forEach((bot) => {
-    bot.addEventListener('click', function(){
-      const botData = {
-        botName: this.innerHTML
-      }
-      fetch('/api/postbotmessage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(botData)
+  // fetch call to /api/getbots
+  fetch('/api/getbots',{
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  // need in between step to parse response
+  .then(res => res.json())
+  .then(bots => {
+    document.getElementById('bots').innerHTML = `
+      ${bots.map(bot => `<li class="botTalk">${bot.name}</li>`).join('')}
+    `
+  }).then(() => {
+    // When the user clicks on a bot
+    document.querySelectorAll('.botTalk').forEach((bot) => {
+      bot.addEventListener('click', function(){
+        const botData = {
+          botName: this.innerHTML
+        }
+        fetch('/api/postbotmessage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(botData)
+        })
       })
     })
   })
@@ -127,10 +138,6 @@ function outputRoomName(room) {
 
 // Add users to DOM
 function outputUsers(users) {
-  users.forEach(user => {
-    console.log(`user: ${user.uid}`)
-  });
-  console.log(`users: ${users}`)
   userList.innerHTML = `
     ${users.map(user => `<li>${user.username}</li>`).join('')}
   `;

@@ -1,3 +1,7 @@
+"""
+datastore module with memoize data, if possible,
+to prevent unnecessary querying
+"""
 bots = []
 rooms = []
 

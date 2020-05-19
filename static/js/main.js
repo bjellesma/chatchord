@@ -48,7 +48,6 @@ if (document.getElementById('chatRoom')) {
     var socket_1 = io.connect('127.0.0.1:3001');
     // Join chatroom
     socket_1.on('connect', function () {
-        console.log('connect once');
         socket_1.emit('joinRoom', { userToken: userToken_1 });
     });
     // Get room and users
@@ -75,19 +74,31 @@ if (document.getElementById('chatRoom')) {
         messageTextArea.value = '';
         messageTextArea.focus();
     });
-    // When the user clicks on a bot
-    var bots = document.querySelectorAll('.botTalk');
-    bots.forEach(function (bot) {
-        bot.addEventListener('click', function () {
-            var botData = {
-                botName: this.innerHTML
-            };
-            fetch('/api/postbotmessage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(botData)
+    // fetch call to /api/getbots
+    fetch('/api/getbots', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        // need in between step to parse response
+        .then(function (res) { return res.json(); })
+        .then(function (bots) {
+        document.getElementById('bots').innerHTML = "\n      " + bots.map(function (bot) { return "<li class=\"botTalk\">" + bot.name + "</li>"; }).join('') + "\n    ";
+    }).then(function () {
+        // When the user clicks on a bot
+        document.querySelectorAll('.botTalk').forEach(function (bot) {
+            bot.addEventListener('click', function () {
+                var botData = {
+                    botName: this.innerHTML
+                };
+                fetch('/api/postbotmessage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(botData)
+                });
             });
         });
     });
@@ -146,9 +157,5 @@ function outputRoomName(room) {
 }
 // Add users to DOM
 function outputUsers(users) {
-    users.forEach(function (user) {
-        console.log("user: " + user.uid);
-    });
-    console.log("users: " + users);
     userList.innerHTML = "\n    " + users.map(function (user) { return "<li>" + user.username + "</li>"; }).join('') + "\n  ";
 }

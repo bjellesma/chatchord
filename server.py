@@ -49,24 +49,13 @@ def index():
             'token': json_web_token,
         })
 
-@app.route('/api/postbotmessage', methods=['POST'])
-def post_bot_message():
-    data = request.get_json()
-    # data = json.loads(data)
-    bot_name = data['botName']
-    bot_phrases = get_bot_phrases_by_name(bot_name)
-    bot_phrase = random.choice(bot_phrases)
-    socketio.emit(
-        'message', 
-        format_message(bot_name, bot_phrase), 
-        broadcast=True
-    )
-    return 'Success'
-
-@app.route('/chat', methods=['GET', 'POST'])
-def get_chat():
-    if request.method == 'GET':
-        chats_query='''
+# 1. Get bots routes
+# 2. Use AJAX call to call route if the bots is not already available
+@app.route('/api/getbots', methods=['GET'])
+def get_bots():
+    # if bots is not already loaded
+    if not bots:
+        bots_query='''
             {
                 allBots {
                     edges {
@@ -79,16 +68,11 @@ def get_chat():
                 }
             }
         '''
-        jwt = request.args.get('token')
-        jwt_payload = UserTokens.read_token(jwt)
-        username = jwt_payload.get('username')
-        room = jwt_payload.get('room')
         try:
-            result = schema.execute(chats_query)
+            result = schema.execute(bots_query)
         except Exception as err:
-            print(f'There was an error performing a graphql query for {rooms_query}. Error: {err}')
+            print(f'There was an error performing a graphql query for {bots_query}. Error: {err}')
         bots_graphql = result.data['allBots']['edges']
-        # Load bots into datastore
         for bot in bots_graphql:
             bots.append(
                 {
@@ -96,7 +80,32 @@ def get_chat():
                     'phrases': bot['node']['phrases']
                 }
             )
-        return render_template('chat.html', bots=bots, username=username, room=room)
+    return jsonify(bots)
+
+@app.route('/api/postbotmessage', methods=['POST'])
+def post_bot_message():
+    data = request.get_json()
+    bot_name = data['botName']
+    bot_phrases = get_bot_phrases_by_name(bot_name)
+    # Get random bot phrase
+    bot_phrase = random.choice(bot_phrases)
+    socketio.emit(
+        'message', 
+        format_message(bot_name, bot_phrase), 
+        broadcast=True
+    )
+    return 'Success'
+
+@app.route('/chat', methods=['GET', 'POST'])
+def get_chat():
+    if request.method == 'GET':
+        
+        jwt = request.args.get('token')
+        jwt_payload = UserTokens.read_token(jwt)
+        username = jwt_payload.get('username')
+        room = jwt_payload.get('room')
+        
+        return render_template('chat.html', username=username, room=room)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

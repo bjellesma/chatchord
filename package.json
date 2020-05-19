@@ -7,7 +7,7 @@
     "server": "pipenv run python server.py",
     "dump-requirements": "pipenv lock --requirements > requirements.txt",
     "tc-watch": "tsc static/js/main.ts -w",
-    "heroku": "heroku local"
+    "heroku": "pipenv run heroku local"
   },
   "author": "Brad Traversy",
   "license": "MIT",

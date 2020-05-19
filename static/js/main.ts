@@ -17,7 +17,7 @@ if(document.getElementById('chatRoom')){
     ignoreQueryPrefix: true
   });
   //@ts-ignore
-  const socket = io.connect('127.0.0.1:3001');
+  const socket = io.connect();
 
   // Join chatroom
   socket.on('connect', function(){

@@ -17,7 +17,7 @@ if(document.getElementById('chatRoom')){
     ignoreQueryPrefix: true
   });
   //@ts-ignore
-  const socket = io.connect({transports: ['websocket']});
+  const socket = io.connect('chatchord.herokuapp.com/', {transports: ['websocket']});
 
   // Join chatroom
   socket.on('connect', function(){
@@ -34,6 +34,7 @@ if(document.getElementById('chatRoom')){
 
   // Message from server
   socket.on('message', message => {
+    console.log('receiving message')
     outputMessage(message);
     // Scroll down
     chatMessages.scrollTop = chatMessages.scrollHeight;

@@ -168,6 +168,7 @@ def init_connection():
 
 @socketio.on('chatMessage')
 def chat_message(message):
+    print(f'print message')
     user = get_current_user(request.sid)
     room = user["room"]
     emit(

@@ -45,7 +45,7 @@ if (document.getElementById('chatRoom')) {
         ignoreQueryPrefix: true
     });
     //@ts-ignore
-    var socket_1 = io.connect({ transports: ['websocket'] });
+    var socket_1 = io.connect('chatchord.herokuapp.com/', { transports: ['websocket'] });
     // Join chatroom
     socket_1.on('connect', function () {
         socket_1.emit('joinRoom', { userToken: userToken_1 });
@@ -58,6 +58,7 @@ if (document.getElementById('chatRoom')) {
     });
     // Message from server
     socket_1.on('message', function (message) {
+        console.log('receiving message');
         outputMessage(message);
         // Scroll down
         chatMessages.scrollTop = chatMessages.scrollHeight;

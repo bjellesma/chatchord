@@ -18,12 +18,16 @@ def get_current_user(uid):
 
 # Remove user from list
 def user_disconnect(uid):
+    print(f"requested user to delete: {uid}")
+    print(f"current list of users: {users}")
     # Expense operation, remove later
     for i in range(len(users)):
+        print(f"testing index: {i} against {len(users)}")
         if users[i]["uid"] == uid:
+            deleted_username = users[i]["username"]
+            deleted_room = users[i]["room"]
             del users[i]
-
-    return users
+            return deleted_username, deleted_room
 
 # Get current users in room
 def get_room_users(room):

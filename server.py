@@ -219,17 +219,17 @@ def joinRoom(data):
 
 @socketio.on('disconnect')
 def disconnect():
-    user = user_disconnect(uid=request.sid)
-    if user:
+    deleted_username, room = user_disconnect(uid=request.sid)
+    if deleted_username:
         emit(
             'message', 
-            format_message(bot_name, f'{user["username"]} has left the chat'), 
+            format_message(bot_name, f'{deleted_username} has left the chat'), 
             broadcast=True,
             room=room
         )
         emit(
             'roomUsers', 
-            {'room': user["room"],'users': get_room_users(user["room"])}, 
+            {'room': room,'users': get_room_users(room)}, 
             broadcast=True,
             room=room)
 
